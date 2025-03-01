@@ -3,17 +3,17 @@ This Repo Consist of the Docker Tutorial Materials According to https://www.yout
 
 ## Setup
 
-1.
+1. Clone Repository
 ```
 git clone https://github.com/Sjiaseng/Docker-Tutorial.git
 ```
 
-2.
+2. Build Docker Image
 ```
 docker build -t myapp:1.0 . 
 ```
 
-3.
+3. Run Docker Compose
 ```
 docker-compose up -d
 ```
