@@ -1,0 +1,152 @@
+# without having to download the services in your local environment
+
+alpine.js -> use lesser space to store in container
+
+start by heading to dockerhub -> get official public images. [no authentication required]
+
+docker image -> actual package [artifact to move around]
+
+docker container -> start application, environment created [running]
+
+docker run in application layer; VM run in OS Kernel and Application layer
+
+head to docker docs to download docker suitable for your OS.[check requirements also]
+
+for legacy computer / not supported docker (install the docker toolbox)
+
+container = running environment for image.
+port binded -> talk to application running inside of container.
+ 
+
+Command:
+ 
+docker ps [see which container running]
+
+docker run postgres:9.6 [get postgres in version 9.6] -> pull and start postgres service with this command
+docker run postgres:10.10 [can have both version running together]
+
+docker pull redis [pull latest images only]
+docker images [see images installed]
+docker run redis [run service]
+
+docker run -d redis [id of redis container]
+
+-- can do with container name also
+
+docker stop container_id
+docker rm container_id
+docker start container_id
+
+docker ps -a [show all running container]
+
+docker run -p6000:6379 redis  [laptop port 6000 while container port 6379]
+docker run -p6000:6379 -d redis  [get ID]
+
+docker run -d -p6001:6379 --name redis-1 redis:4.0 [rename container]
+ 
+Debug: 
+
+docker logs container_id
+docker logs container_name
+
+docker exec -it container_id /bin/sh
+docker exec -it container_name /bin/sh
+
+pwd [print out what directory is there]
+env [show environment]
+
+Note: docker run -d -p --name container_name [create container from an image]
+
+Demo Project Steps:
+1. Development
+2. CI/CD Intergration
+3. Deployment
+
+CI/CD
+- create Javascript Project with Mongodb Image.
+- commit to git
+- Jenkins -> build JS App & Create Docker Image
+- Generated Image push to Private Docker Repository
+- Server now can pulls the both images 
+
+Extra Notes: Jenkins will usually automate the process like testing, integration while detecting code from the committed git.
+It Supports Automated tests with Selenium, jUnit and more while triggers by the operation set by the Users. [docker and kubernetes also]
+
+Docker Network -> work between containers
+ 
+Command:
+
+docker network ls [see list of networks]
+docker network create mongo-network [create a network]
+
+Summary:
+1. Pull Required Images
+2. Create a Network Links
+3a. Run the Images with port Mapping [Ex. docker run -p 27017:27017 -d mongo] continue with 3b.
+3b. Read the Description Provided in docker hub (images-> environment variables for setup)
+Ex:
+docker run -p 27017:27017 -d -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root --name mongodb --net mongo-network mongo
+[for mongodb ^]
+docker run -p 8081:8081 -d -e ME_CONFIG_MONGODB_ADMINUSERNAME=root -e ME_CONFIG_MONGODB_ADMINPASSWORD=root --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express    
+[for mongo-express]
+
+Docker Compose:
+
+create .yaml file - execute all run command at once !
+
+docker-compose -f doc_name.yaml up
+
+docker-compose up -d [start container from docker-compose.yml and running background]
+docker-compose down
+
+DockerFile -> blueprint {to create/for} the docker image [executed in container env only not local]
+
+1. Determine type of project [nodejs]
+2. Look for the nodejs image from docker hub
+
+Explaination of DockerFile-
+
+FROM node [nodejs] {install node} -> check docker hub for the image name
+ENV env-var [for environment variable] {set env-var}
+RUN mkdir -p /home/app [create directory in docker -> linux command "RUN"] {create /home/app dir}
+COPY . /home/app [copy the files into the directory] {copy current folders to /home/app dir}
+CMD["node","server.js"] {run the command -> node server.js}
+
+with Dockerfile, you can build your own images with command:
+
+docker build -t myapp:1.0 . 
+
+note: docker build -t appname:version directory
+{if u use "." it means in current directory}
+
+docker rmi name/id {remove image}
+
+docker run myapp:1.0 {execute with tag}
+
+-- build the images then -> continue docker volumes
+
+why use volume [use if have database] -> to store the data and prevent data remove when restarting the container
+
+folder in host file -> mounted into virtual file system of docker.
+
+3 types of docker volumes exist:
+
+- host volume: 
+1. docker run -v /home/mount/data:/var/lib/mysql/data 
+{manually assign volume} -> got reference
+
+- anonymous volume: 
+1. docker run -v /var/lib/mysql/data
+{dont have a reference}
+
+- named volume [most used]
+1. docker run -v name:/var/lib/mysql/data
+{added a name}
+
+Note: assign port before running
+docker run -p 3000:3000 myapp:1.0
+
+command:
+docker stop $(docker ps -q) {stop all}
+docker rm $(docker ps -a -q) {remove all}
+docker rmi $(docker images -q) {remove all unused image}
